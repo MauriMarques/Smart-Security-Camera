@@ -18,9 +18,12 @@ last_epoch = 0
 def check_for_objects():
     global last_epoch
     while True:
-        frame, found_obj, count_objects = video_camera.get_object(object_classifier)
-        if count_objects:
-            print("Found () people".format(count_objects))
+        try:
+            frame, found_obj, count_objects = video_camera.get_object(object_classifier)
+            if count_objects:
+                print("Found () people".format(count_objects))
+        except:
+            print("Error")
 
 @app.route('/')
 def index():
