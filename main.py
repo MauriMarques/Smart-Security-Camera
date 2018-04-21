@@ -14,18 +14,13 @@ object_classifier = cv2.CascadeClassifier("models/fullbody_recognition_model.xml
 app = Flask(__name__)
 last_epoch = 0
 
+
 def check_for_objects():
-	global last_epoch
-	while True:
-		try:
-			frame, found_obj = video_camera.get_object(object_classifier)
-			if found_obj and (time.time() - last_epoch) > email_update_interval:
-				last_epoch = time.time()
-				print "Sending email..."
-				sendEmail(frame)
-				print "done!"
-		except:
-			print "Error sending email: ", sys.exc_info()[0]
+    global last_epoch
+    while True:
+    frame, found_obj, count_objects = video_camera.get_object(object_classifier)
+    if count_objects:
+        print("Found () people".format(count_objects))
 
 @app.route('/')
 def index():
