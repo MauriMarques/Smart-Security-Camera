@@ -20,7 +20,7 @@ def check_for_objects():
     while True:
         try:
             frame, found_obj, count_objects = video_camera.get_object(object_classifier)
-            if count_objects:
+            if found_obj == True:
                 print("Found {} people".format(count_objects))
         except:
             print("Error")
