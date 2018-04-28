@@ -16,12 +16,10 @@ mobile_net = MobileNet()
 # App Globals (do not edit)
 app = Flask(__name__)
 last_epoch = 0
-people_count = 0
 
 
 def check_for_objects():
     global last_epoch
-    global people_count
     while True:
         try:
             frame, found_obj, count_objects = video_camera.get_object(object_classifier)
@@ -32,8 +30,7 @@ def check_for_objects():
                 if confidence > 0.5:
                     idx = int(detections[0, 0, i, 1])
                     if mobile_net.CLASSES[idx] == "person":
-                        people_count += 1
-                        print("Found people {}".format(people_count))
+                        print("Found people")
 
             if found_obj == True:
                 print("Found {} people".format(count_objects))
