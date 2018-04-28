@@ -1,6 +1,6 @@
 import cv2
 import sys
-from mail import sendEmail
+#from mail import sendEmail
 from flask import Flask, render_template, Response
 from camera import VideoCamera
 import time
