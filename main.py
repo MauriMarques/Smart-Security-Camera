@@ -3,12 +3,15 @@ import sys
 #from mail import sendEmail
 from flask import Flask, render_template, Response
 from camera import VideoCamera
+from mobilenet import MobileNet
+import numpy as np
 import time
 import threading
 
 email_update_interval = 600 # sends an email only once in this time interval
 video_camera = VideoCamera(flip=True) # creates a camera object, flip vertically
 object_classifier = cv2.CascadeClassifier("models/facial_recognition_model.xml") # an opencv classifier
+mobile_net = MobileNet()
 
 # App Globals (do not edit)
 app = Flask(__name__)
@@ -20,6 +23,15 @@ def check_for_objects():
     while True:
         try:
             frame, found_obj, count_objects = video_camera.get_object(object_classifier)
+
+            detections = mobile_net.process(frame)
+            for i in np.arange(0, detections.shape[2]):
+                confidence = detections[0, 0, i, 2]
+                if confidence > 0.5:
+                    idx = int(detections[0, 0, i, 1])
+                    if mobile_net.CLASSES[idx] == "person":
+                        print("Found people")
+
             if found_obj == True:
                 print("Found {} people".format(count_objects))
         except:
