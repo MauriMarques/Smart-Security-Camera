@@ -43,7 +43,7 @@ class VideoCamera(object):
         for (x, y, w, h) in objects:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-        ret, jpeg = cv2.imencode('.jpg', frame)
-        return (jpeg.tobytes(), found_objects, len(objects))
+        #ret, jpeg = cv2.imencode('.jpg', frame)
+        return (frame, found_objects, len(objects))
 
 
