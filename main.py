@@ -25,8 +25,10 @@ def check_for_objects():
     global pc
     while True:
         try:
-            frame, found_obj, count_objects = video_camera.get_object(object_classifier)
+            frame = video_camera.get_frame()
 
+            ppf = 0
+            fpf = 0
             detections = mobile_net.process(frame)
             for i in np.arange(0, detections.shape[2]):
                 confidence = detections[0, 0, i, 2]
@@ -39,14 +41,13 @@ def check_for_objects():
                         (startX, startY, endX, endY) = box.astype("int")
                         (startX, startY, endX, endY) = (startX.item(), startY.item(), endX.item(), endY.item())
                         fc = faceCV.detect_face(frame[startY: endY, startX:endX])
+                        ppf += 1
 
-                        if fc == 0:
-                            pc.append("0 Faces")
-                        else:
-                            pc.append("{} Faces".format(fc))
+                        if fc > 0:
+                            fpf += fc
 
-            if found_obj == True:
-                print("Found {} people".format(count_objects))
+            pc.append({"people": ppf, "faces": fpf})
+
         except:
             print("Error")
 
