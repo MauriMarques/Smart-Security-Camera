@@ -13,18 +13,15 @@ email_update_interval = 600 # sends an email only once in this time interval
 video_camera = VideoCamera(flip=True) # creates a camera object, flip vertically
 object_classifier = cv2.CascadeClassifier("models/facial_recognition_model.xml") # an opencv classifier
 mobile_net = MobileNet()
-faceCV = FaceCV()
 
 # App Globals (do not edit)
 app = Flask(__name__)
 last_epoch = 0
-pc = 0
-fc = 0
+pc = []
 
 def check_for_objects():
     global last_epoch
     global pc
-    global fc
     while True:
         try:
             frame, found_obj, count_objects = video_camera.get_object(object_classifier)
@@ -40,9 +37,12 @@ def check_for_objects():
                         box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
                         (startX, startY, endX, endY) = box.astype("int")
                         (startX, startY, endX, endY) = (startX.item(), startY.item(), endX.item(), endY.item())
-
-                        pc += 1
                         fc = faceCV.detect_face(frame[startY: endY, startX:endX])
+
+                        if len(fc) > 0:
+                            pc.append("0 Faces")
+                        else:
+                            pc.append("{} Faces".format(len(fc)))
 
             if found_obj == True:
                 print("Found {} people".format(count_objects))
@@ -52,6 +52,10 @@ def check_for_objects():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/info')
+def info():
+    return pc
 
 def gen(camera):
     while True:
@@ -69,7 +73,3 @@ if __name__ == '__main__':
     t.daemon = True
     t.start()
     app.run(host='0.0.0.0', debug=False)
-
-    while True:
-        print("Found people {}".format(pc))
-        print("Found faces {}".format(fc))
