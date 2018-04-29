@@ -24,8 +24,13 @@ class VideoCamera(object):
         return jpeg.tobytes()
 
     def get_raw_frame(self):
-        frame = self.flip_if_needed(self.vs.read())
-        return frame
+        frame = self.vs.read()
+
+        if frame is not None:
+            fliped_frame = self.flip_if_needed(frame)
+            return fliped_frame
+        else:
+            return None
 
     def get_object(self, classifier):
         found_objects = False
