@@ -13,6 +13,7 @@ email_update_interval = 600 # sends an email only once in this time interval
 video_camera = VideoCamera(flip=True) # creates a camera object, flip vertically
 object_classifier = cv2.CascadeClassifier("models/facial_recognition_model.xml") # an opencv classifier
 mobile_net = MobileNet()
+faceCV = FaceCV
 
 # App Globals (do not edit)
 app = Flask(__name__)
@@ -55,7 +56,7 @@ def index():
 
 @app.route('/info')
 def info():
-    return pc
+    return "{}".format(pc)
 
 def gen(camera):
     while True:
