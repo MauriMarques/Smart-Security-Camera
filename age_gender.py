@@ -15,7 +15,7 @@ class FaceCV(object):
     CASE_PATH = pkg_resources.resource_filename(__name__, "haarcascade_frontalface_default.xml")
     WRN_WEIGHTS_PATH = pkg_resources.resource_filename(__name__, "weights.18-4.06.hdf5")
 
-    def __init__(self, depth=16, width=8, face_size=64):
+    def __init__(self, depth=16, width=8, face_size=30):
         self.face_size = face_size
         # self.model = WideResNet(face_size, depth=depth, k=width)()
         #
@@ -66,8 +66,8 @@ class FaceCV(object):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(
             gray,
-            scaleFactor=1.2,
-            minNeighbors=10,
+            scaleFactor=1.1,
+            minNeighbors=5,
             minSize=(self.face_size, self.face_size)
         )
 
