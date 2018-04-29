@@ -13,7 +13,7 @@ email_update_interval = 600 # sends an email only once in this time interval
 video_camera = VideoCamera(flip=True) # creates a camera object, flip vertically
 object_classifier = cv2.CascadeClassifier("models/facial_recognition_model.xml") # an opencv classifier
 mobile_net = MobileNet()
-faceCV = FaceCV
+faceCV = FaceCV()
 
 # App Globals (do not edit)
 app = Flask(__name__)
@@ -39,8 +39,7 @@ def check_for_objects():
                         (startX, startY, endX, endY) = box.astype("int")
                         (startX, startY, endX, endY) = (startX.item(), startY.item(), endX.item(), endY.item())
                         fc = faceCV.detect_face(frame[startY: endY, startX:endX])
-
-                        if len(fc) > 0:
+                        if len(fc) == 0:
                             pc.append("0 Faces")
                         else:
                             pc.append("{} Faces".format(len(fc)))
