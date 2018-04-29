@@ -38,14 +38,15 @@ def check_for_objects():
                         box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
                         (startX, startY, endX, endY) = box.astype("int")
                         (startX, startY, endX, endY) = (startX.item(), startY.item(), endX.item(), endY.item())
-                        fc = faceCV.detect_face(frame[startY: endY, startX:endX])
-
-                        if fc == 0:
-                            pc.append("0 Faces")
-                        else:
-                            pc.append("{} Faces".format(fc))
+                        # fc = faceCV.detect_face(frame[startY: endY, startX:endX])
+                        #
+                        # if fc == 0:
+                        #     pc.append("0 Faces")
+                        # else:
+                        #     pc.append("{} Faces".format(fc))
 
             if found_obj == True:
+                pc.append("{} Faces".format(count_objects))
                 print("Found {} people".format(count_objects))
         except:
             print("Error")
