@@ -24,32 +24,29 @@ def check_for_objects():
     global last_epoch
     global pc
     while True:
-        try:
-            frame = video_camera.get_frame()
+        frame = video_camera.get_frame()
+        ppf = 0
+        fpf = 0
 
-            ppf = 0
-            fpf = 0
-            detections = mobile_net.process(frame)
-            for i in np.arange(0, detections.shape[2]):
-                confidence = detections[0, 0, i, 2]
-                if confidence > 0.5:
-                    idx = int(detections[0, 0, i, 1])
+        detections = mobile_net.process(frame)
+        for i in np.arange(0, detections.shape[2]):
+            confidence = detections[0, 0, i, 2]
+            if confidence > 0.5:
+                idx = int(detections[0, 0, i, 1])
 
-                    if mobile_net.CLASSES[idx] == "person":
-                        (h, w) = frame.shape[:2]
-                        box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-                        (startX, startY, endX, endY) = box.astype("int")
-                        (startX, startY, endX, endY) = (startX.item(), startY.item(), endX.item(), endY.item())
-                        fc = faceCV.detect_face(frame[startY: endY, startX:endX])
-                        ppf += 1
+                if mobile_net.CLASSES[idx] == "person":
+                    ppf += 1
 
-                        if fc > 0:
-                            fpf += fc
+                    (h, w) = frame.shape[:2]
+                    box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                    (startX, startY, endX, endY) = box.astype("int")
+                    (startX, startY, endX, endY) = (startX.item(), startY.item(), endX.item(), endY.item())
+                    fc = faceCV.detect_face(frame[startY: endY, startX:endX])
 
-            pc.append({"people": ppf, "faces": fpf})
+                    if fc > 0:
+                        fpf += fc
 
-        except:
-            print("Error")
+        pc.append({"people": ppf, "faces": fpf})
 
 @app.route('/')
 def index():
