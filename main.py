@@ -24,7 +24,7 @@ def check_for_objects():
     global last_epoch
     global pc
     while True:
-        frame = video_camera.get_frame()
+        frame = video_camera.get_raw_frame()
         ppf = 0
         fpf = 0
 
