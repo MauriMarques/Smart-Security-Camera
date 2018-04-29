@@ -48,7 +48,8 @@ def check_for_objects():
                         if fc > 0:
                             fpf += fc
 
-            pc.append({"people": ppf, "faces": fpf})
+            if ppf > 0 or fpf > 0:
+                pc.append({"people": ppf, "faces": fpf})
 
 @app.route('/')
 def index():
