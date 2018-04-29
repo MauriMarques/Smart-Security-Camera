@@ -19,11 +19,12 @@ faceCV = FaceCV()
 app = Flask(__name__)
 last_epoch = 0
 pc = 0
-
+fc = 0
 
 def check_for_objects():
     global last_epoch
     global pc
+    global fc
     while True:
         try:
             frame, found_obj, count_objects = video_camera.get_object(object_classifier)
@@ -41,9 +42,7 @@ def check_for_objects():
                         (startX, startY, endX, endY) = (startX.item(), startY.item(), endX.item(), endY.item())
 
                         pc += 1
-                        print("Found people {}".format(pc))
-                        faces = faceCV.detect_face(frame[startY: endY, startX:endX])
-                        print("Faces {}".format(faces))
+                        fc = faceCV.detect_face(frame[startY: endY, startX:endX])
 
             if found_obj == True:
                 print("Found {} people".format(count_objects))
@@ -70,3 +69,7 @@ if __name__ == '__main__':
     t.daemon = True
     t.start()
     app.run(host='0.0.0.0', debug=False)
+
+    while True:
+        print("Found people {}".format(pc))
+        print("Found faces {}".format(fc))
