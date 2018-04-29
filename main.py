@@ -39,10 +39,11 @@ def check_for_objects():
                         (startX, startY, endX, endY) = box.astype("int")
                         (startX, startY, endX, endY) = (startX.item(), startY.item(), endX.item(), endY.item())
                         fc = faceCV.detect_face(frame[startY: endY, startX:endX])
-                        if len(fc) == 0:
+
+                        if fc == 0:
                             pc.append("0 Faces")
                         else:
-                            pc.append("{} Faces".format(len(fc)))
+                            pc.append("{} Faces".format(fc))
 
             if found_obj == True:
                 print("Found {} people".format(count_objects))
