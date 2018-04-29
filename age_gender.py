@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pkg_resources
 import tensorflow as tf
-from .wide_resnet import WideResNet
+from wide_resnet import WideResNet
 
 USERNAME = "mauricio_mmarques"
 PASSWORD = "Mauteamas2"
@@ -17,14 +17,14 @@ class FaceCV(object):
 
     def __init__(self, depth=16, width=8, face_size=64):
         self.face_size = face_size
-        self.model = WideResNet(face_size, depth=depth, k=width)()
-
-        if not os.access(self.WRN_WEIGHTS_PATH, os.W_OK):
-            synset_url = "https://bitbucket.org/walle_team/walle_models/raw/047c2c2d08833be34f80007738eeb5617e3ac255/age_gender/weights.18-4.06.hdf5"
-            os.system('wget ' + AUTH_WGET_COMMAND + synset_url + " -P " + pkg_resources.resource_filename(__name__, '.'))
-            
-        self.model.load_weights(self.WRN_WEIGHTS_PATH)
-        self.graph = tf.get_default_graph()
+        # self.model = WideResNet(face_size, depth=depth, k=width)()
+        #
+        # if not os.access(self.WRN_WEIGHTS_PATH, os.W_OK):
+        #     synset_url = "https://bitbucket.org/walle_team/walle_models/raw/047c2c2d08833be34f80007738eeb5617e3ac255/age_gender/weights.18-4.06.hdf5"
+        #     os.system('wget ' + AUTH_WGET_COMMAND + synset_url + " -P " + pkg_resources.resource_filename(__name__, '.'))
+        #
+        # self.model.load_weights(self.WRN_WEIGHTS_PATH)
+        # self.graph = tf.get_default_graph()
         self.face_cascade = cv2.CascadeClassifier(self.CASE_PATH)
 
     def crop_face(self, imgarray, section, margin=40, size=64):
@@ -72,36 +72,36 @@ class FaceCV(object):
         )
 
         # placeholder for cropped faces
-        face_imgs = np.empty((len(faces), self.face_size, self.face_size, 3))
-        for i, face in enumerate(faces):
-            face_img, cropped = self.crop_face(image, face, margin=40, size=self.face_size)
-            (x, y, w, h) = cropped
-            cv2.rectangle(image, (x, y), (x + w, y + h), (255, 200, 0), 2)
-            face_imgs[i,:,:,:] = face_img
+        # face_imgs = np.empty((len(faces), self.face_size, self.face_size, 3))
+        # for i, face in enumerate(faces):
+        #     face_img, cropped = self.crop_face(image, face, margin=40, size=self.face_size)
+        #     (x, y, w, h) = cropped
+        #     cv2.rectangle(image, (x, y), (x + w, y + h), (255, 200, 0), 2)
+        #     face_imgs[i,:,:,:] = face_img
 
-        if len(face_imgs) > 0:
-            # predict ages and genders of the detected faces
-            if self.graph is None:
-                results = self.model.predict(face_imgs)
-                predicted_genders = results[0]
-                ages = np.arange(0, 101).reshape(101, 1)
-                predicted_ages = results[1].dot(ages).flatten()
-            else:
-                with self.graph.as_default():
-                    results = self.model.predict(face_imgs)
-                    predicted_genders = results[0]
-                    ages = np.arange(0, 101).reshape(101, 1)
-                    predicted_ages = results[1].dot(ages).flatten()
+        # if len(face_imgs) > 0:
+        #     # predict ages and genders of the detected faces
+        #     if self.graph is None:
+        #         results = self.model.predict(face_imgs)
+        #         predicted_genders = results[0]
+        #         ages = np.arange(0, 101).reshape(101, 1)
+        #         predicted_ages = results[1].dot(ages).flatten()
+        #     else:
+        #         with self.graph.as_default():
+        #             results = self.model.predict(face_imgs)
+        #             predicted_genders = results[0]
+        #             ages = np.arange(0, 101).reshape(101, 1)
+        #             predicted_ages = results[1].dot(ages).flatten()
+        #
+        # # draw results
+        # faces_results = []
+        # for i, face in enumerate(faces):
+        #     result = {}
+        #     if len(predicted_ages) > 0:
+        #         result["age"] = int(predicted_ages[i])
+        #     if len(predicted_genders) > 0:
+        #         result["gender"] = "F" if predicted_genders[i][0] > 0.5 else "M"
+        #
+        #     faces_results.append(result)
 
-        # draw results
-        faces_results = []
-        for i, face in enumerate(faces):
-            result = {}
-            if len(predicted_ages) > 0:
-                result["age"] = int(predicted_ages[i])
-            if len(predicted_genders) > 0:
-                result["gender"] = "F" if predicted_genders[i][0] > 0.5 else "M"
-
-            faces_results.append(result)
-
-        return faces_results
+        return len(faces)
