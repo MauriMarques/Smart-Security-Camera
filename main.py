@@ -4,7 +4,6 @@ import sys
 from flask import Flask, render_template, Response
 from camera import VideoCamera
 from mobilenet import MobileNet
-from age_gender import FaceCV
 import numpy as np
 import time
 import threading
@@ -14,7 +13,6 @@ video_camera = VideoCamera(flip=True) # creates a camera object, flip vertically
 object_classifier = cv2.CascadeClassifier("models/facial_recognition_model.xml") # an opencv classifier
 face_net = cv2.dnn.readNetFromCaffe("deploy.prototxt.txt","res10_300x300_ssd_iter_140000.caffemodel")
 mobile_net = MobileNet()
-faceCV = FaceCV()
 
 # App Globals (do not edit)
 app = Flask(__name__)
@@ -29,6 +27,8 @@ def check_for_objects():
 
         if frame is not None:
             fpf = 0
+            ppf = 0
+
             blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,
                                          (300, 300), (104.0, 177.0, 123.0))
             face_net.setInput(blob)
@@ -44,7 +44,15 @@ def check_for_objects():
                 if confidence > 0.5:
                     fpf += 1
 
-            pc.append({"faces": fpf})
+            detections = mobile_net.process(frame)
+            for i in np.arange(0, detections.shape[2]):
+                confidence = detections[0, 0, i, 2]
+                if confidence > 0.5:
+                    idx = int(detections[0, 0, i, 1])
+                    if mobile_net.CLASSES[idx] == "person":
+                        ppf += 1
+
+            pc.append({"people": ppf, "faces": fpf})
 
 
 
