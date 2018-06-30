@@ -12,6 +12,7 @@ import threading
 email_update_interval = 600 # sends an email only once in this time interval
 video_camera = VideoCamera(flip=True) # creates a camera object, flip vertically
 object_classifier = cv2.CascadeClassifier("models/facial_recognition_model.xml") # an opencv classifier
+face_net = cv2.dnn.readNetFromCaffe("deploy.prototxt.txt","res10_300x300_ssd_iter_140000.caffemodel")
 mobile_net = MobileNet()
 faceCV = FaceCV()
 
@@ -27,29 +28,25 @@ def check_for_objects():
         frame = video_camera.get_raw_frame()
 
         if frame is not None:
-            ppf = 0
             fpf = 0
-
-            detections = mobile_net.process(frame)
-            for i in np.arange(0, detections.shape[2]):
+            blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,
+                                         (300, 300), (104.0, 177.0, 123.0))
+            face_net.setInput(blob)
+            detections = face_net.forward()
+            # loop over the detections
+            for i in range(0, detections.shape[2]):
+                # extract the confidence (i.e., probability) associated with the
+                # prediction
                 confidence = detections[0, 0, i, 2]
+
+                # filter out weak detections by ensuring the `confidence` is
+                # greater than the minimum confidence
                 if confidence > 0.5:
-                    idx = int(detections[0, 0, i, 1])
+                    fpf += 1
 
-                    if mobile_net.CLASSES[idx] == "person":
-                        ppf += 1
+            pc.append({"faces": fpf})
 
-                        (h, w) = frame.shape[:2]
-                        box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-                        (startX, startY, endX, endY) = box.astype("int")
-                        (startX, startY, endX, endY) = (startX.item(), startY.item(), endX.item(), endY.item())
-                        fc = faceCV.detect_face(frame[startY: endY, startX:endX])
 
-                        if fc > 0:
-                            fpf += fc
-
-            if ppf > 0 or fpf > 0:
-                pc.append({"people": ppf, "faces": fpf})
 
 @app.route('/')
 def index():
